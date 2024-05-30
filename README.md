@@ -10,9 +10,11 @@ dependencies: requiresments.txt에 정의됨
 
 ### 3. 실행 방법
 **vscode + devcontainer 실행 (추가 설정 필요 x)**
+
 vscode 및 docker 설치 후, vscode devcontainer extension으로 실행 하는 것을 권장합니다.
 
 **local에서 실행 (추가 설정 필요)**
+
 아래 bash 명령어 실행
 ```bash
 #!/usr/bin/env bash
