@@ -6,6 +6,7 @@ exclude =
     *.py[co],
     __pycache__,
     venv,
-    .env
+    .env,
+    yolov5
 
 ignore = W291, E128, E501
