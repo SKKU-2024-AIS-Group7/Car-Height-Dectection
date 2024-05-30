@@ -57,6 +57,6 @@ else
 fi
 
 # Ignore ipynb cell output when commit
-git config filter.strip-notebook-outputs.clean "jq --indent 1 'del(.cells[].outputs, .cells[].execution_count)'"
+nbstripout --install
 
 echo "Devcontainer Setup Finished"

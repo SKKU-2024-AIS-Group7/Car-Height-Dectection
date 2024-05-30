@@ -12,3 +12,4 @@ jupyterlab
 jupyterlab-code-formatter
 tqdm
 gdown
+nbstripout
