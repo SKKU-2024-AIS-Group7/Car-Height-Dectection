@@ -22,30 +22,38 @@ pip3 install -r ./requirements.txt
 
 # Clone YoloV5 Repository
 if [ ! -d "./yolov5" ]; then
-    git clone https://github.com/ultralytics/yolov5.git
-    cd yolov5
-    pip install -r requirements.txt
+  git clone https://github.com/ultralytics/yolov5.git
+  cd yolov5
+  pip install -r requirements.txt
+  # remove git
+  rm -rf .git
+else
+  echo "yolov5 repository is already downloaded then skip cloning..."
 fi
 
-# Download Image Datasets
 cd $BASEDIR
 
-FILE_ID="1gzQY1eYRf1YCQwzEpD2u18NVKEbNNSH7"
-TAR_FILE_NAME="image-data.tar"
-gdown $FILE_ID -O $TAR_FILE_NAME
+# Download Image Datasets
+if [ ! -d "./yolov5/data/train" ]; then
+  FILE_ID="1gzQY1eYRf1YCQwzEpD2u18NVKEbNNSH7"
+  TAR_FILE_NAME="image-data.tar"
+  gdown $FILE_ID -O $TAR_FILE_NAME
 
-tar -xvf $TAR_FILE_NAME
+  tar -xvf $TAR_FILE_NAME
 
-EXTRACTED_DIR="image-data"
+  EXTRACTED_DIR="image-data"
 
-mkdir -p ./yolov5/data
-cp -r $EXTRACTED_DIR/* ./yolov5/data/
+  mkdir -p ./yolov5/data
+  cp -r $EXTRACTED_DIR/* ./yolov5/data/
 
-rm -f $TAR_FILE_NAME
-rm -rf $EXTRACTED_DIR
+  rm -f $TAR_FILE_NAME
+  rm -rf $EXTRACTED_DIR
 
-# Remove ._ files
-find ./yolov5/data/ -name '._*' -exec rm {} +
-rm ._image-data
+  # Remove ._ files
+  find ./yolov5/data/ -name '._*' -exec rm {} +
+  rm ._image-data
+else
+  echo "image data set is already downloaded then skip download..."
+fi
 
 echo "Devcontainer Setup Finished"
