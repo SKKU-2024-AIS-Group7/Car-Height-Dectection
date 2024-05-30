@@ -1,4 +1,4 @@
-## Vehicle Height Detection System using Deep Learning-based Image Processing
+# Vehicle Height Detection System using Deep Learning-based Image Processing
 2024-1 성균관대학교 AI 시스템 7조 팀 프로젝트 레포지토리
 
 ### 1. 주제
