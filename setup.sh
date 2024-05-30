@@ -56,4 +56,7 @@ else
   echo "image data set is already downloaded then skip download..."
 fi
 
+# Ignore ipynb cell output when commit
+git config filter.strip-notebook-outputs.clean "jq --indent 1 'del(.cells[].outputs, .cells[].execution_count)'"
+
 echo "Devcontainer Setup Finished"
