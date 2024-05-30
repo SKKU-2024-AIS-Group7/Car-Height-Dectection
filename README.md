@@ -5,16 +5,14 @@
 논문 구현: 딥러닝 기반 이미지 처리를 이용한 통행 차량 높이검출 시스템(정재호 외 2인, 2021)
 
 ### 2. 프로젝트 Spec
-python 버전: 3.11 (cpython)
+python 버전: 3.11 (cpython) <br/>
 dependencies: requiresments.txt에 정의됨
 
 ### 3. 실행 방법
-**vscode + devcontainer 실행 (추가 설정 필요 x)**
-
+**vscode + devcontainer 실행 (추가 설정 필요 x)** <br/>
 vscode 및 docker 설치 후, vscode devcontainer extension으로 실행 하는 것을 권장합니다.
 
-**local에서 실행 (추가 설정 필요)**
-
+**local에서 실행 (추가 설정 필요)** <br/>
 아래 bash 명령어 실행
 ```bash
 #!/usr/bin/env bash
