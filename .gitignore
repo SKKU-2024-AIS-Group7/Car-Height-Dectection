@@ -1,5 +1,8 @@
 __pycache__
 yolov5
 yolov5s.pt
+hf
 
 .DS_Store
+
+.env

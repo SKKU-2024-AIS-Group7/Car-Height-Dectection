@@ -13,3 +13,6 @@ jupyterlab-code-formatter
 tqdm
 gdown
 nbstripout
+huggingface_hub
+transformers
+python-dotenv

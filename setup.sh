@@ -59,4 +59,6 @@ fi
 # Ignore ipynb cell output when commit
 nbstripout --install
 
+echo "HUGGINGFACE_TOKEN=YOUR-TOKEN-HERE" >> .env
+
 echo "Devcontainer Setup Finished"
