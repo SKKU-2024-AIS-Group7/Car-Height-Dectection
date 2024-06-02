@@ -1,6 +1,6 @@
 __pycache__
 yolov5
-yolov5s.pt
+*.pt
 hf
 
 .DS_Store

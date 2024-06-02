@@ -17,7 +17,7 @@ def hf_login():
 def upload_model_to_hf(repo_name, local_model_dir, filenames):
     api = HfApi()
     token = HfFolder.get_token()
-    
+
     for filename in filenames:
         model_path = os.path.join(local_model_dir, filename)
         print(model_path)
@@ -27,5 +27,5 @@ def upload_model_to_hf(repo_name, local_model_dir, filenames):
                 path_in_repo=filename,
                 repo_id=repo_name,
                 repo_type="model",
-                token=token
+                token=token,
             )

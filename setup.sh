@@ -28,30 +28,53 @@ if [ ! -d "./yolov5" ]; then
   # remove git
   rm -rf .git
 else
-  echo "yolov5 repository is already downloaded then skip cloning..."
+  echo "yolov5 repository is already cloned then skip cloning..."
 fi
 
 cd $BASEDIR
 
-# Download Image Datasets
-if [ ! -d "./yolov5/data/train" ]; then
-  FILE_ID="1gzQY1eYRf1YCQwzEpD2u18NVKEbNNSH7"
-  TAR_FILE_NAME="image-data.tar"
+# Download Image Datasets - YOLO based
+if [ ! -d "./yolov5/data/yolo/train" ]; then
+  FILE_ID="1oKYkOO8jqk_jic_26IiaxILnvuj_vB1Q"
+  TAR_FILE_NAME="yolo.tar"
   gdown $FILE_ID -O $TAR_FILE_NAME
 
   tar -xvf $TAR_FILE_NAME
 
-  EXTRACTED_DIR="image-data"
+  EXTRACTED_DIR="yolo"
 
-  mkdir -p ./yolov5/data
-  cp -r $EXTRACTED_DIR/* ./yolov5/data/
+  mkdir -p ./yolov5/data/yolo
+  cp -r $EXTRACTED_DIR/* ./yolov5/data/yolo
 
   rm -f $TAR_FILE_NAME
   rm -rf $EXTRACTED_DIR
 
   # Remove ._ files
   find ./yolov5/data/ -name '._*' -exec rm {} +
-  rm ._image-data
+  rm ._yolo
+else
+  echo "image data set is already downloaded then skip download..."
+fi
+
+# Download Image Datasets - COCO based
+if [ ! -d "./yolov5/data/coco/train" ]; then
+  FILE_ID="1lZ4GqrXpJsg_0mYMv3xktk5S4yRCnBWx"
+  TAR_FILE_NAME="coco.tar"
+  gdown $FILE_ID -O $TAR_FILE_NAME
+
+  tar -xvf $TAR_FILE_NAME
+
+  EXTRACTED_DIR="coco"
+
+  mkdir -p ./yolov5/data/coco
+  cp -r $EXTRACTED_DIR/* ./yolov5/data/coco
+
+  rm -f $TAR_FILE_NAME
+  rm -rf $EXTRACTED_DIR
+
+  # Remove ._ files
+  find ./yolov5/data/ -name '._*' -exec rm {} +
+  rm ._coco
 else
   echo "image data set is already downloaded then skip download..."
 fi
@@ -59,6 +82,11 @@ fi
 # Ignore ipynb cell output when commit
 nbstripout --install
 
-echo "HUGGINGFACE_TOKEN=YOUR-TOKEN-HERE" >> .env
+# Create env file
+if [ ! -f ".env" ]; then
+    echo "HUGGINGFACE_TOKEN=YOUR-TOKEN-HERE" >> .env
+else
+    echo ".env file already exists then skip creating..."
+fi
 
 echo "Devcontainer Setup Finished"
