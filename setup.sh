@@ -56,35 +56,13 @@ else
   echo "image data set is already downloaded then skip download..."
 fi
 
-# Download Image Datasets - COCO based
-if [ ! -d "./yolov5/data/coco/train" ]; then
-  FILE_ID="1lZ4GqrXpJsg_0mYMv3xktk5S4yRCnBWx"
-  TAR_FILE_NAME="coco.tar"
-  gdown $FILE_ID -O $TAR_FILE_NAME
-
-  tar -xvf $TAR_FILE_NAME
-
-  EXTRACTED_DIR="coco"
-
-  mkdir -p ./yolov5/data/coco
-  cp -r $EXTRACTED_DIR/* ./yolov5/data/coco
-
-  rm -f $TAR_FILE_NAME
-  rm -rf $EXTRACTED_DIR
-
-  # Remove ._ files
-  find ./yolov5/data/ -name '._*' -exec rm {} +
-  rm ._coco
-else
-  echo "image data set is already downloaded then skip download..."
-fi
-
 # Ignore ipynb cell output when commit
 nbstripout --install
 
 # Create env file
 if [ ! -f ".env" ]; then
     echo "HUGGINGFACE_TOKEN=YOUR-TOKEN-HERE" >> .env
+    echo "ROBOFLOW_TOKEN=YOUR-TOKEN-HERE" >> .env
 else
     echo ".env file already exists then skip creating..."
 fi

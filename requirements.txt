@@ -16,3 +16,5 @@ nbstripout
 huggingface_hub
 transformers
 python-dotenv
+roboflow
+tensorboard
