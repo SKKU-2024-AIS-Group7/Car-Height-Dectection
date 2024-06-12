@@ -5,6 +5,14 @@ terraform {
       version = "5.51.1"
     }
   }
+
+  backend "s3" {
+    bucket         = "car-height-detection-tfstate-storage"
+    key            = "terraform/terraform.tfstate"
+    region         = "ap-northeast-2"
+    encrypt        = true
+    dynamodb_table = "car-height-detection-tfstate-lock"
+  }
 }
 
 provider "aws" {
@@ -73,7 +81,7 @@ resource "aws_sagemaker_model" "pytorch_model" {
     environment = {
       SAGEMAKER_PROGRAM                   = "inference.py"
       SAGEMAKER_SUBMIT_DIRECTORY          = "/opt/ml/model"
-      SAGEMAKER_ENABLE_CLOUDWATCH_METRICS = "false"
+      SAGEMAKER_ENABLE_CLOUDWATCH_METRICS = "true"
       SAGEMAKER_REGION                    = var.region
     }
   }
@@ -81,6 +89,25 @@ resource "aws_sagemaker_model" "pytorch_model" {
 
 resource "aws_sagemaker_endpoint_configuration" "pytorch_model_endpoint_config" {
   name = "pytorch-model-endpoint-config"
+
+  data_capture_config {
+    enable_capture              = true
+    destination_s3_uri          = "s3://${aws_s3_bucket.model_bucket.bucket}/capture/"
+    initial_sampling_percentage = 100
+
+    capture_options {
+      capture_mode = "Input"
+    }
+
+    capture_options {
+      capture_mode = "Output"
+    }
+
+    capture_content_type_header {
+      csv_content_types  = ["text/csv"]
+      json_content_types = ["application/json"]
+    }
+  }
 
   production_variants {
     variant_name           = "AllTraffic"

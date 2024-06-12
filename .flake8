@@ -7,7 +7,6 @@ exclude =
     __pycache__,
     venv,
     .env,
-    yolov5,
-    apss/infra
+    yolov5
 
 ignore = W291, E128, E501

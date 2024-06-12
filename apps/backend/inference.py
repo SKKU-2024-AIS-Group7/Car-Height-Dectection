@@ -1,11 +1,17 @@
-import requests
-import os
+import boto3
 
-url = os.getenv("SAGEMAKER_ENDPOINT")
+client = boto3.client("sagemaker-runtime")
+
 image_path = "sample.jpg"
 
-with open(image_path, "rb") as img_file:
-    headers = {"Content-Type": "application/x-image"}
-    response = requests.post(url, headers=headers, data=img_file)
+with open(image_path, "rb") as image_file:
+    payload = image_file.read()
 
-print(response.json())
+endpoint_name = "pytorch-model-endpoint"
+content_type = "image/jpeg"
+accept = "application/json"
+response = client.invoke_endpoint(
+    EndpointName=endpoint_name, ContentType=content_type, Accept=accept, Body=payload
+)
+
+print(response)
