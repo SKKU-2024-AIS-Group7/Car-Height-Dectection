@@ -2,13 +2,6 @@
 
 set -ex
 
-# Check requirements: npm
-if [ ! $(command -v npm) ]
-then
-  echo "Error: npm is not installed. Please install npm first."
-  exit 1
-fi
-
 BASEDIR=$(dirname $(realpath $0))
 
 cd $BASEDIR
