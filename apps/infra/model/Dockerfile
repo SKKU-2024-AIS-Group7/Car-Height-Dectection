@@ -4,17 +4,18 @@ WORKDIR /opt/program
 
 RUN apt-get update && apt-get install -y \
     python3-pip \
+    libgl1-mesa-glx \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install --no-cache-dir \
+RUN pip install --no-cache-dir \
     torch \
     torchvision \
-    opencv-python \
     scikit-learn \
-    boto3 \
-    joblib \
-    pillow
+    opencv-python-headless \
+    numpy \
+    pillow \
+    joblib
 
-COPY . /opt/program
+COPY ./apps/infra/model /opt/program
 
 ENTRYPOINT ["python3", "inference.py"]

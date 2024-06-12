@@ -1,5 +1,5 @@
 import torch.nn as nn
-import torch.optim as optim
+
 
 class HeightPredictionModel(nn.Module):
     def __init__(self):
@@ -8,7 +8,7 @@ class HeightPredictionModel(nn.Module):
         self.relu = nn.ReLU()
         self.fc2 = nn.Linear(128, 64)
         self.fc3 = nn.Linear(64, 1)
-    
+
     def forward(self, x):
         x = self.fc1(x)
         x = self.relu(x)

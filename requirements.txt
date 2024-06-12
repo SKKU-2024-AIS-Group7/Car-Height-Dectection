@@ -18,3 +18,6 @@ transformers
 python-dotenv
 roboflow
 tensorboard
+boto3
+joblib
+pillow

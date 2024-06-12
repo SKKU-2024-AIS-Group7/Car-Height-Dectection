@@ -10,3 +10,7 @@ Self-Driving-Car-3
 .env
 
 images/angles
+
+.terraform
+.terraform.lock.hcl
+terraform.tfstate.backup

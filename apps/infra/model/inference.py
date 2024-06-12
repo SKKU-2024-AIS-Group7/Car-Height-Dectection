@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 from PIL import Image
 import os
+import base64
 from utils import HeightPredictionModel, detect_objects, segment_objects, draw_boxes_and_masks
 
 
@@ -34,14 +35,12 @@ def model_fn(model_dir):
     }
 
 
-
 def input_fn(request_body, content_type):
     if content_type == 'image/jpeg':
         image = Image.open(request_body)
         return np.array(image)
     else:
         raise ValueError('Unsupported content type: {}'.format(content_type))
-
 
 
 def predict_fn(input_object, model):
@@ -57,19 +56,26 @@ def predict_fn(input_object, model):
     masks, outputs = segment_objects(mask_rcnn_model, image_rgb, vehicle_boxes, device, scaler, regression_model)
     image_with_masks, heights, widths = draw_boxes_and_masks(image_rgb, masks, outputs)
 
-    output_image_path = '/tmp/output_image_with_masks.jpg'
-    output_image = cv2.cvtColor(image_with_masks, cv2.COLOR_RGB2BGR)
-    cv2.imwrite(output_image_path, output_image)
+    _, buffer = cv2.imencode('.jpg', cv2.cvtColor(image_with_masks, cv2.COLOR_RGB2BGR))
+    image_bytes = buffer.tobytes()
 
     return {
         'heights': heights,
         'widths': widths,
-        'output_image_path': output_image_path
+        'image_bytes': image_bytes
     }
 
 
 def output_fn(prediction, accept):
     if accept == 'application/json':
-        return json.dumps(prediction)
+        response = {
+            'heights': prediction['heights'],
+            'widths': prediction['widths'],
+            'image': base64.b64encode(prediction['image_bytes']).decode('utf-8')
+        }
+        return json.dumps(response), 'application/json'
+    elif accept == 'image/jpeg':
+        return prediction['image_bytes'], 'image/jpeg'
     else:
         raise ValueError('Unsupported accept type: {}'.format(accept))
+
