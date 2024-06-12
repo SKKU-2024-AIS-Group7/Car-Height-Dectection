@@ -63,6 +63,7 @@ nbstripout --install
 if [ ! -f ".env" ]; then
     echo "HUGGINGFACE_TOKEN=YOUR-TOKEN-HERE" >> .env
     echo "ROBOFLOW_TOKEN=YOUR-TOKEN-HERE" >> .env
+    echo "SAGEMAKER_ENDPOINT=YOUR-URL-HERE" >> .env
 else
     echo ".env file already exists then skip creating..."
 fi

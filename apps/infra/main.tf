@@ -13,86 +13,84 @@ provider "aws" {
 
 data "aws_caller_identity" "current" {}
 
-data "aws_iam_policy_document" "assume_role" {
-  statement {
-    actions = [ "sts:AssumeRole" ]
-    principals {
-      type = "Service"
-      identifiers = [ "sagemaker.amazonaws.com" ]
+resource "aws_s3_bucket" "model_bucket" {
+  bucket = "car-height-detection-model"
+}
+
+resource "aws_s3_object" "model_artifact" {
+  bucket = aws_s3_bucket.model_bucket.bucket
+  key    = "model/model.tar.gz"
+  source = "${path.module}/model.tar.gz"
+  etag   = filemd5("${path.module}/model.tar.gz")
+}
+
+resource "aws_iam_role" "sagemaker_execution_role" {
+  name = "sagemaker-execution-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "sagemaker.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "sagemaker_policy" {
+  role = aws_iam_role.sagemaker_execution_role.name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:*",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "s3:GetObject",
+          "sagemaker:*",
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+
+resource "aws_sagemaker_model" "pytorch_model" {
+  name               = "pytorch-model"
+  execution_role_arn = aws_iam_role.sagemaker_execution_role.arn
+
+  primary_container {
+    image          = "763104351884.dkr.ecr.${var.region}.amazonaws.com/pytorch-inference:1.8.1-cpu-py36-ubuntu18.04"
+    model_data_url = "s3://${aws_s3_bucket.model_bucket.bucket}/model/model.tar.gz"
+    environment = {
+      SAGEMAKER_PROGRAM                   = "inference.py"
+      SAGEMAKER_SUBMIT_DIRECTORY          = "/opt/ml/model"
+      SAGEMAKER_ENABLE_CLOUDWATCH_METRICS = "false"
+      SAGEMAKER_REGION                    = var.region
     }
   }
 }
 
-resource "aws_iam_role" "foo" {
-  name = "sagemaker-role"
-  path = "/"
-  assume_role_policy = data.aws_iam_policy_document.assume_role.json
-}
-
-data "aws_iam_policy_document" "foo" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "sagemaker:*",
-      "cloudwatch:PutMetricData",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-      "logs:CreateLogGroup",
-      "logs:DescribeLogStreams",
-      "ecr:GetAuthorizationToken",
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:BatchGetImage"
-    ]
-    resources = ["*"]
-  }
-}
-
-resource "aws_iam_policy" "foo" {
-  name        = "sagemaker-policy"
-  description = "Allow Sagemaker to create model"
-  policy      = data.aws_iam_policy_document.foo.json
-}
-
-resource "aws_iam_role_policy_attachment" "foo" {
-  role       = aws_iam_role.foo.name
-  policy_arn = aws_iam_policy.foo.arn
-}
-
-resource "aws_sagemaker_model" "foo" {
-  name              = "car-height-detection"
-  execution_role_arn = aws_iam_role.foo.arn
-
-  primary_container {
-    image = "${data.aws_caller_identity.current.account_id}.dkr.ecr.ap-northeast-2.amazonaws.com/car-height-detection:latest"
-  }
-
-  tags = {
-    foo = "bar"
-  }
-}
-
-resource "aws_sagemaker_endpoint_configuration" "foo" {
-  name = "car-height-detection"
+resource "aws_sagemaker_endpoint_configuration" "pytorch_model_endpoint_config" {
+  name = "pytorch-model-endpoint-config"
 
   production_variants {
-    variant_name           = "variant-1"
-    model_name             = aws_sagemaker_model.foo.name
+    variant_name           = "AllTraffic"
+    model_name             = aws_sagemaker_model.pytorch_model.name
     initial_instance_count = 1
     instance_type          = "ml.m4.xlarge"
-    initial_variant_weight = 1
-  }
-
-  tags = {
-    foo = "bar"
   }
 }
 
-resource "aws_sagemaker_endpoint" "foo" {
-  name = "car-height-detection"
-  endpoint_config_name = aws_sagemaker_endpoint_configuration.foo.name
-
-  tags = {
-    foo = "bar"
-  }
+resource "aws_sagemaker_endpoint" "pytorch_model_endpoint" {
+  name                 = "pytorch-model-endpoint"
+  endpoint_config_name = aws_sagemaker_endpoint_configuration.pytorch_model_endpoint_config.name
 }

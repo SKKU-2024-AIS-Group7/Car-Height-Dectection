@@ -8,8 +8,7 @@
     "workspaceFolder": "/workspace",
     "postCreateCommand": "./setup.sh",
     "features": {
-        "ghcr.io/devcontainers/features/terraform:1": {},
-        "ghcr.io/devcontainers/features/node:1": {}
+        "ghcr.io/devcontainers/features/terraform:1": {}
     },
     "customizations": {
         "vscode": {
